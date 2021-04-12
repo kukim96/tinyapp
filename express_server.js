@@ -3,6 +3,15 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 
+const generateRandomString = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let randomString = '';
+  for (let i = 0; i < 6; i++) {
+    randomString += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return randomString;
+}
+
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 
