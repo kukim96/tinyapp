@@ -15,7 +15,6 @@ const generateRandomString = () => {
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 
-
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -58,6 +57,12 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL;
   console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);        
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
