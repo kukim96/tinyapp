@@ -19,12 +19,12 @@ const generateRandomString = () => {
   return randomString;
 }
 
-const existingEmail = (email) => {
-  for (const user in users) {
-    if(users[user].email === email) {
-      return true;
+const existingEmail = (email, database) => {
+  for (const user in database) {
+    if(database[user].email === email) {
+      return database[user];
     }
-  } return false;
+  } return undefined;
 }
 
 const urlDatabase = {
@@ -32,8 +32,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {
-};
+const users = {};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -64,7 +63,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  console.log(longURL);
   res.redirect(longURL);
 })
 
@@ -82,8 +80,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = req.body.updatedURL
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -100,11 +97,11 @@ app.post("/login", (req, res) => {
       res.redirect("/urls");
     } else {
       res.statusCode = 403
-      res.send("<h2>403 Forbidden<br>This email does not exist</h2>")
+      res.send("<h2>403 Forbidden<br>The entred password is incorrect</h2>")
     }
   } else {
     res.statusCode = 403;
-    res.send("<h2>403 Forbidden<br>The entred password is incorrect</h2>")
+    res.send("<h2>403 Forbidden<br>This email does not exist</h2>")
   }
 });
 
@@ -120,7 +117,7 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   if (req.body.email && req.body.password) {
-    if (!existingEmail(req.body.email)) {
+    if (!existingEmail(req.body.email, users)) {
       const userId = generateRandomString();
       users[userId] = {
         userId,
@@ -143,4 +140,3 @@ app.post("/register", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-
