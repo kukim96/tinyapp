@@ -13,10 +13,9 @@
     <% if (!user) { %>
     <form class="nav-item nav-link" action="/login" method="POST">
       <div>
-        <input class="nav-item nav-link" type="text" name="username" placeholder="Username" style="width: 170px">
-        <button type="submit" class="btn btn-primary">Login</button>
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
       </div>
-    </form>
     <% } else { %>
     <form class="form-inline my-1" action="/logout" method="POST">
       <div>
