@@ -87,9 +87,25 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = {user: users[req.cookies["user_id"]]};
+  res.render("urls_login", templateVars);
+});
+
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
+  const user = existingEmail(req.body.email, users);
+  if (user) {
+    if(req.body.password === user.password) {
+      res.cookie("user_id", user.userId);
+      res.redirect("/urls");
+    } else {
+      res.statusCode = 403
+      res.send("<h2>403 Forbidden<br>This email does not exist</h2>")
+    }
+  } else {
+    res.statusCode = 403;
+    res.send("<h2>403 Forbidden<br>The entred password is incorrect</h2>")
+  }
 });
 
 app.post("/logout", (req, res) => {
