@@ -1,10 +1,14 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
+
 const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
+
+app.set("view engine", "ejs");
 
 const generateRandomString = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -15,8 +19,13 @@ const generateRandomString = () => {
   return randomString;
 }
 
-app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({extended: true}));
+const existingEmail = (email) => {
+  for (const user in users) {
+    if(users[user].email === email) {
+      return true;
+    }
+  } return false;
+}
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -24,7 +33,6 @@ const urlDatabase = {
 };
 
 const users = {
-
 };
 
 app.get("/", (req, res) => {
@@ -95,14 +103,25 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  const userId = generateRandomString();
-  users[userId] = {
-    userId,
-    email: req.body.email,
-    password: req.body.password
+  if (req.body.email && req.body.password) {
+    if (!existingEmail(req.body.email)) {
+      const userId = generateRandomString();
+      users[userId] = {
+        userId,
+        email: req.body.email,
+        password: req.body.password
+      }
+      res.cookie("user_id", userId);
+      res.redirect("/urls");
+    } else {
+      res.statusCode = 400;
+      res.send("<h2>400 Bad Request<br>Entered Email is already existing.</h2>")
+    }
+  } else {
+    res.statusCode = 400;
+    res.send("<h2>400 Bad Request<br>Please enter in the email and password</h2>")
   }
-  res.cookie("user_id", userId);
-  res.redirect("/urls");
+  
 });
 
 app.listen(PORT, () => {
