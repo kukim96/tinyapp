@@ -24,7 +24,7 @@ const generateRandomString = () => {
   return randomString;
 }
 
-const existingEmail = (email, database) => {
+const getUserByEmail = (email, database) => {
   for (const user in database) {
     if(database[user].email === email) {
       return database[user];
@@ -116,7 +116,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const user = existingEmail(req.body.email, users);
+  const user = getUserByEmail(req.body.email, users);
   if (user) {
     if(bcrypt.compareSync(req.body.password, user.password)) {
       // console.log('user password: ', user.password)
@@ -149,7 +149,7 @@ app.post("/register", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
     res.status(400).send("Email or password is empty.");
   }
-  else if (existingEmail(req.body.email, users)){
+  else if (getUserByEmail(req.body.email, users)){
     res.status(400).send("Email is already existing. Please login.");
     res.redirect("/login");
   }
