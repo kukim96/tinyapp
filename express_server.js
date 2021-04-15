@@ -15,6 +15,8 @@ const bcrypt = require("bcrypt");
 
 app.set("view engine", "ejs");
 
+const { getUserByEmail } = require("./helpers")
+
 const generateRandomString = () => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let randomString = '';
@@ -24,13 +26,13 @@ const generateRandomString = () => {
   return randomString;
 }
 
-const getUserByEmail = (email, database) => {
-  for (const user in database) {
-    if(database[user].email === email) {
-      return database[user];
-    }
-  } return undefined;
-}
+// const getUserByEmail = (email, database) => {
+//   for (const user in database) {
+//     if(database[user].email === email) {
+//       return database[user];
+//     }
+//   } return undefined;
+// }
 
 const urlsForUser = (id) => {
   const userURL = {};
@@ -105,7 +107,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   if (req.session.user_id === urlDatabase[shortURL].userId) {
-    urlDatabase[shortURL].longURL = req.body.updatedURL
+    urlDatabase[shortURL].longURL = req.body.longURL
   }
   res.redirect(`/urls/${shortURL}`);
 });
