@@ -91,13 +91,17 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
+  if(req.cookies["user_id"] === urlDatabase[shortURL].userId) {
+    delete urlDatabase[shortURL];
+  }
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL].longURL = req.body.updatedURL
+  if (req.cookies["user_id"] === urlDatabase[shortURL].userId) {
+    urlDatabase[shortURL].longURL = req.body.updatedURL
+  }
   res.redirect(`/urls/${shortURL}`);
 });
 
