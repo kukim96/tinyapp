@@ -8,6 +8,8 @@ app.use(bodyParser.urlencoded({extended: true}));
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+const bcrypt = require("bcrypt");
+
 app.set("view engine", "ejs");
 
 const generateRandomString = () => {
@@ -46,7 +48,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+  res.json(users);
 });
 
 app.get("/hello", (req, res) => {
@@ -113,7 +115,8 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user = existingEmail(req.body.email, users);
   if (user) {
-    if(req.body.password === user.password) {
+    if(bcrypt.compareSync(req.body.password, user.password)) {
+      console.log('user password: ', user.password)
       res.cookie("user_id", user.userId);
       res.redirect("/urls");
     } else {
@@ -143,7 +146,7 @@ app.post("/register", (req, res) => {
       users[userId] = {
         userId,
         email: req.body.email,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password, 10)
       }
       res.cookie("user_id", userId);
       res.redirect("/urls");
