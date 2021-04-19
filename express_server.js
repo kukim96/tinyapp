@@ -144,7 +144,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("session");
   res.clearCookie("session.sig");
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // new registration page
